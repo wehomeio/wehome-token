@@ -76,7 +76,7 @@ contract WeToken is StandardToken {
      * Early bird: 1 ETH = 11,000 WET
      * Normal: 1 ETH = 10,000 WET
      */
-    function createTokens() external payable {
+    function createTokens() public payable {
         require(!isFinalized);
         require(now >= startDate && now <= endDate);
         require(msg.value > 0);
