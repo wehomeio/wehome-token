@@ -30,7 +30,7 @@ contract WeToken is StandardToken {
 
     // crowdsale constant
     uint256 public constant WET_FUND = 500 * (10**6) * 10**18; // 500m WET reserved for WeHome
-    uint256 public constant EARLY_BIRD_CAP = 110 * (10**6) * 10**18; // First 110m WET for early bird
+    uint256 public constant EARLY_BIRD_CAP = 610 * (10**6) * 10**18; // First 110m WET for early bird
     uint256 public constant EARLY_BIRD_RATE = 11000; // 11000 BAT tokens per 1 ETH for early bird
     uint256 public constant EXCHANGE_RATE = 10000; // 10000 BAT tokens per 1 ETH
     uint256 public constant TOKEN_TOTAL_CAP =  1 * (10**9) * 10**18;
