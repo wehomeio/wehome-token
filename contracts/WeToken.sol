@@ -68,6 +68,10 @@ contract WeToken is StandardToken {
         CreateToken(wetFundDeposit, WET_FUND);  // logs WeHome fund
     }
 
+    function () external payable {
+        createTokens();
+    }
+
     /**
      * Early bird: 1 ETH = 11,000 WET
      * Normal: 1 ETH = 10,000 WET
