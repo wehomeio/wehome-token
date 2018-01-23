@@ -45,11 +45,16 @@ contract WeToken is StandardToken {
     event BurnToken(address indexed from, uint256 _value);
 
     /**
-     * Constructor
+     * Creates WeToken
+     *
+     * @param _ethFundDeposit wallet address which stores all ETH after finalized
+     * @param _wetFundDeposit wallet address to store WeToken temparorily
+     * @param _startDate UNIX timestamp for starting time
      */
     function WeToken(
         address _ethFundDeposit,
-        address _wetFundDeposit) public {
+        address _wetFundDeposit,
+        uint256 _startDate) public {
         symbol = "WET";
         name = "WeToken";
         decimals = 18;
@@ -59,9 +64,9 @@ contract WeToken is StandardToken {
         ethFundDeposit = _ethFundDeposit;
         wetFundDeposit = _wetFundDeposit;
 
-        startDate = now;
-        earlyBirdEnds = now + 1 weeks;
-        endDate = now + 4 weeks;
+        startDate = _startDate;
+        earlyBirdEnds = startDate + 1 weeks;
+        endDate = startDate + 4 weeks;
 
         _totalSupply = WET_FUND;
         balances[wetFundDeposit] = WET_FUND; // Deposit WeHome fund
