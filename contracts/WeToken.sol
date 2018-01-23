@@ -73,6 +73,53 @@ contract WeToken is StandardToken {
     }
 
     /**
+     * Finalize 
+     */
+    function finalize() external {
+        require(!isFinalized);
+        // only ETH owner can finalize the crowdsale
+        require(msg.sender == ethFundDeposit); 
+        // require either end or totalSupply is enough
+        require(now >= endDate || _totalSupply == TOKEN_TOTAL_CAP);
+        // require minimum token sale
+        require(_totalSupply >= MIN_TOKEN_TOTAL_CAP);
+
+        isFinalized = true;
+        ethFundDeposit.transfer(this.balance);
+    }
+
+    /**
+     * Allows contributors to recover their ether in the case of a failed funding campaign.
+     */
+    function refund() external {
+        require(!isFinalized);
+        require(now >= endDate);
+        require(msg.sender != wetFundDeposit);
+        require(_totalSupply >= MIN_TOKEN_TOTAL_CAP);
+
+        uint256 tokens = balances[msg.sender];
+        require(tokens != 0);
+        balances[msg.sender] = 0;
+        _totalSupply = _totalSupply.sub(tokens);
+
+        uint256 ethContribute = contributes[msg.sender];
+        RefundETH(msg.sender, ethContribute);
+        msg.sender.transfer(ethContribute);
+    }
+
+    /**
+     * Burn token
+     */
+    function burn(uint256 _value) external returns (bool success) {
+        require(balances[msg.sender] >= _value);
+        require(_value > 0);
+        balances[msg.sender] = balances[msg.sender].sub(_value);
+        _totalSupply = _totalSupply.sub(_value);
+        BurnToken(msg.sender, _value);
+        return true;
+    }
+
+    /**
      * Early bird: 1 ETH = 11,000 WET
      * Normal: 1 ETH = 10,000 WET
      */
@@ -98,54 +145,6 @@ contract WeToken is StandardToken {
         contributes[msg.sender] = contribute;
         _totalSupply = targetTotalSupply;
         CreateToken(msg.sender, tokens);
-    }
-
-    /**
-     * Finalize 
-     */
-    function finalize() external {
-        require(!isFinalized);
-        // only ETH owner can finalize the crowdsale
-        require(msg.sender == ethFundDeposit); 
-        // require either end or totalSupply is enough
-        require(now >= endDate || _totalSupply == TOKEN_TOTAL_CAP);
-        // require minimum token sale
-        require(_totalSupply >= MIN_TOKEN_TOTAL_CAP);
-
-        isFinalized = true;
-        assert(ethFundDeposit.send(this.balance));
-    }
-
-    /**
-     * Allows contributors to recover their ether in the case of a failed funding campaign.
-     */
-    function refund() external {
-        require(!isFinalized);
-        require(now >= endDate);
-        require(msg.sender != wetFundDeposit);
-        require(_totalSupply >= MIN_TOKEN_TOTAL_CAP);
-
-        uint256 tokens = balances[msg.sender];
-        require(tokens != 0);
-        balances[msg.sender] = 0;
-        _totalSupply = _totalSupply.sub(tokens);
-
-        uint256 ethContribute = contributes[msg.sender];
-        RefundETH(msg.sender, ethContribute);
-        // if you're using a contract; make sure it works with .send gas limits
-        assert(msg.sender.send(ethContribute));
-    }
-
-    /**
-     * Burn token
-     */
-    function burn(uint256 _value) external returns (bool success) {
-        require(balances[msg.sender] >= _value);
-        require(_value > 0);
-        balances[msg.sender] = balances[msg.sender].sub(_value);
-        _totalSupply = _totalSupply.sub(_value);
-        BurnToken(msg.sender, _value);
-        return true;
     }
 
 }

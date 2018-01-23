@@ -1,0 +1,12 @@
+#!/bin/bash
+
+rm -rf dist
+mkdir dist
+
+solc --bin --overwrite -o dist/ contracts/WeToken.sol
+solc --bin --overwrite -o dist/ contracts/TokenVesting.sol
+
+solc --abi --overwrite -o dist/ contracts/WeToken.sol
+solc --abi --overwrite -o dist/ contracts/TokenVesting.sol
+
+
